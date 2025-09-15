@@ -82,7 +82,7 @@ Este proyecto es una aplicación full-stack para la gestión de tickets, desarro
 
 ## Instalación y Configuración
 
-### Usando Docker (Recomendado)
+### Usando Docker
 
 1. **Clonar el repositorio**
 
@@ -91,6 +91,14 @@ Este proyecto es una aplicación full-stack para la gestión de tickets, desarro
 ```bash
 
 docker-compose up --build
+
+```
+
+si el comando de arriba no funciona entonces el docker-compose sin - tal que asi:
+
+```bash
+
+docker compose up --build
 
 ```
 
