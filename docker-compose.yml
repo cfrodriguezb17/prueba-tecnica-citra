@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./prueba-api
+      dockerfile: Dockerfile
+    env_file:
+      - ./prueba-api/.env
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=password
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./prueba-api:/var/www
+    command: >
+      bash -c "
+        while ! pg_isready -q -h postgres -p 5432 -U laravel; do
+          echo 'Waiting for database to be ready...'
+          sleep 2
+        done
+        echo 'Database is ready.'
+        php artisan migrate:fresh --seed
+        php artisan serve --host=0.0.0.0 --port=8000
+      "
+
+  frontend:
+    build:
+      context: ./prueba-front
+      dockerfile: Dockerfile
+    ports:
+      - "4173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
